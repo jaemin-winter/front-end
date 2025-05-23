@@ -12,6 +12,7 @@ export interface ArticleList {
     article_id?: Number,
     title?: String,
     content_preview?: String,
+    created_at ?: Date,
     time_ago?: String,
     author?: String,
     total_comments?: Number,
@@ -28,6 +29,10 @@ export interface createArticleRequest {
 // 게시글 수정 body
 export interface updateArticle {
     title?: String
+    content: String
+}
+// 댓글글 수정 body
+export interface updateArticle {
     content: String
 }
 
@@ -61,17 +66,16 @@ export interface Comment {
     time_ago: String
     comment_count: String
     code: String
+    isView: {
+        type: boolean
+        default: false
+    }   
 }
 
 
 export interface ParentComment extends Comment {
     // 댓글 response
     replies: Comment[]
-    isView: {
-        type: boolean
-        default: false
-    }    
-    
 }    
 
 

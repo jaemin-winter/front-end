@@ -31,7 +31,7 @@
                 </h4>
 
             </div>
-        <!-- 댓글, 좋아요 수 조회 부분 -->
+            <!-- 댓글, 좋아요 수 조회 부분 -->
         </section>
         <div class="mt-3 flex  gap-4 justify-center">
             <div @click="articleOnIsLiked(article)" class="flex gap-2 items-center  cursor-pointer">
@@ -50,7 +50,7 @@
             <form @submit.prevent="handleCreateComment"
                 class='w-90 h-8 my-3 bg-gray-300 rounded-3xl px-4 flex justify-between items-center'>
                 <input placeholder="댓글을 남겨보세요" class="caption fw-bold  text-cocoa-600 placeholder-gray-600 w-90"
-                    ref="inputRef"  v-model="commentinput" />
+                    ref="inputRef" v-model="commentinput" />
                 <button type="submit">
                     <SendingIcon class="cursor-pointer" />
                 </button>
@@ -68,7 +68,7 @@
             </div>
             <div>
                 <h5 class=" h5 mb-1">{{ comment.content }}</h5>
-                <div class="flex items-center gap-4">
+                <div class="flex items-center gap-2">
                     <h6 class="h6">{{ comment.time_ago }}</h6>
                     <div class="flex items-center gap-2">
                         <div @click="commentOnIsLiked(comment)" class="flex gap-1 items-center  cursor-pointer">
@@ -79,16 +79,16 @@
                         <CommentIcon color='minty-500' />
                         <h5 class="h5">{{ comment.replies.length }}</h5>
                     </div>
-                    <h6 @click="onIsView(comment)" class="h5 underline cursor-pointer">댓글달기</h6>
-                    <h6 @click="handleDeleteComment(article.article_id, comment.comment_id)"
-                        class="h5 underline cursor-pointer">삭제</h6>
-                    <!-- <h6 class="h5 underline cursor-pointer" @click="() => goOptionModal(article.article_id, comment.comment_id)" @delete="handleDeleteComment()">삭제</h6> -->
+                    <h5 @click="onIsView(comment)" class="h5 cursor-pointer">답글 쓰기</h5>
+                    <!-- <h5 @click="handleUpdateComment()" class="h5 cursor-pointer">수정</h5> -->
+                    <h5 @click="handleDeleteComment(article.article_id, comment.comment_id)" class="h5 cursor-pointer">
+                        삭제</h5>
                 </div>
                 <!-- 대댓글 입력창 -->
                 <div v-if="comment.isView">
-                    <form @submit.prevent="handleCreatereplies(comment,comment.comment_id)"
+                    <form @submit.prevent="handleCreatereplies(comment, comment.comment_id)"
                         class='w-90 h-8 my-3 bg-gray-300 rounded-3xl px-4 flex justify-between items-center'>
-                        <input placeholder="대댓글을 남겨보세요" class="caption fw-bold  text-cocoa-600 placeholder-gray-600 w-90"
+                        <input placeholder="답글을 남겨보세요" class="caption fw-bold  text-cocoa-600 placeholder-gray-600 w-90"
                             v-model="replyinput" />
                         <button type="submit">
                             <SendingIcon class="cursor-pointer" />
@@ -98,24 +98,40 @@
             </div>
             <!-- 대댓글 -->
             <section v-for="reply in comment.replies" :key="reply.comment_id">
-                <div>
-                    <div class="flex mt-2">
-                        <DownRightIcon />
-                        <div>
-                            <div class="flex justify-between">
-                                <div class="flex items-center gap-1 mb-3">
-                                    <img :src="reply.author_profile_image" alt="프로필이미지" class="w-5 h-5">
-                                    <p class="caption fw-bold"> {{ reply.author }} </p>
-                                </div>
+                <div class="flex mt-2">
+                    <DownRightIcon />
+                    <div>
+                        <div class="flex justify-between">
+                            <div class="flex items-center gap-1 mb-3">
+                                <img :src="reply.author_profile_image" alt="프로필이미지" class="w-5 h-5">
+                                <p class="caption fw-bold"> {{ reply.author }} </p>
                             </div>
-                            <div class="flex justify-between">
-                                <h5 class=" h5 mb-1">{{ reply.content }}</h5>
-                                <h6 @click="handleDeleteReply(comment.comment_id, reply.comment_id,comment)"
-                                    class="h5 underline cursor-pointer">삭제</h6>
+                        </div>
+                        <h5 class=" h5 mb-1">{{ reply.content }}</h5>
+                        <div class="flex gap-2">
+                            <h6 class="h6">{{ comment.time_ago }}</h6>
+                            <div @click="replyOnIsLiked(reply)" class="flex gap-1 items-center  cursor-pointer">
+                                <LikeIcon :fillcolor="reply.is_liked ? 'red-600' : 'none'"
+                                    :color="reply.is_liked ? 'red-600' : 'gray-600'" />
+                                <h5 class="h5">{{ reply.likes_count }}</h5>
                             </div>
+                            <!-- <h5 class="h5 cursor-pointer" @click="onIsView(reply)">수정</h5> -->
+                            <h5 @click="handleDeleteReply(comment.comment_id, reply.comment_id, comment)"
+                                class="h5 cursor-pointer">삭제</h5>
                         </div>
                     </div>
                 </div>
+                <!-- <div v-if="reply.isView">
+                    <form @submit.prevent="handleCreatereplies(comment, comment.comment_id)"
+                        class='w-90 h-8 my-3 bg-gray-300 rounded-3xl px-4 flex justify-between items-center'>
+                        <input placeholder="수정할 답글을 입력하세요"
+                            class="caption fw-bold  text-cocoa-600 placeholder-gray-600 w-90" v-model="replyinput" />
+                        <button type="submit">
+                            <SendingIcon class="cursor-pointer" />
+                        </button>
+                    </form>
+                </div> -->
+
             </section>
         </section>
     </div>
@@ -145,7 +161,7 @@ import type { ArticleDetail, Comment, ParentComment } from '@/types/article';
 
 const isReplyFormVisible = ref(false)
 // focus용 변수
-const inputRef = ref(null)  
+const inputRef = ref(null)
 const useArticle = useArticleComposable()
 const route = useRoute()
 const article = ref<ArticleDetail>({})
@@ -164,9 +180,9 @@ onMounted(async () => {
     comments.value = await useArticle.getCommentList(articleId)
     comments.value.forEach(comment => {
         comment['isView'] = false
+        comment.replies['isView'] = false
     })
 })
-
 
 // 댓글창 focus
 const focusInput = () => {
@@ -191,8 +207,8 @@ const handleCreateComment = async () => {
 }
 
 // 대댓글창 생성
-const onIsView = (selectedComment: ParentComment) => {
-    selectedComment.isView = !selectedComment.isView
+const onIsView = (selected: ParentComment) => {
+    selected.isView = !selected.isView
 }
 
 // 대댓글 달기
@@ -212,6 +228,7 @@ const handleCreatereplies = async (selectedComment, selectedParent_comment_id) =
     // console.log(selectedComment.replies)
     selectedComment.replies.push(newreply)
     replyinput.value = ''
+    onIsView(selectedComment)
 }
 
 
@@ -223,6 +240,7 @@ const goOptionModal = (aritcleId?: number, commentId?: number) => {
     showModal.value = true
 }
 
+// 게시글 목록으로 이동
 const router = useRouter()
 const goArticle1 = () => {
     router.push({ name: 'article' })
@@ -233,23 +251,29 @@ const handleDeleteArticle = async (articleId) => {
     console.log(articleId)
     await useArticle.deleteArticle(articleId)
     console.log("삭제 완료")
-    router.back()
+    router.push({name : 'article'})
     showModal.value = false
 }
 
 // 댓글 삭제
 const handleDeleteComment = async (articleId, commentId) => {
-    await useArticle.deleteComment(articleId, commentId)
-    comments.value = comments.value.filter(comment => comment.comment_id !== commentId)
-    console.log("댓글 삭제 완료")
+    const isConfirmed = confirm('정말 삭제하시겠습니까?')
+    if (isConfirmed) {
+        await useArticle.deleteComment(articleId, commentId)
+        comments.value = comments.value.filter(comment => comment.comment_id !== commentId)
+        console.log("댓글 삭제 완료")
+    }
 }
 
 // 대댓글 삭제
 const handleDeleteReply = async (selectedCommentId, selectedReplyId, selectedComment) => {
-    console.log('삭제한 대댓글의 댓글', selectedComment.replies)
-    await useArticle.deleteReply(selectedCommentId, selectedReplyId)
-    selectedComment.replies = selectedComment.replies.filter(reply => reply.comment_id !== selectedReplyId)
-    console.log("대댓글 삭제 완료") 
+    const isConfirmed = confirm('정말 삭제하시겠습니까?')
+    if (isConfirmed) {
+        console.log('삭제한 대댓글의 댓글', selectedComment.replies)
+        await useArticle.deleteReply(selectedCommentId, selectedReplyId)
+        selectedComment.replies = selectedComment.replies.filter(reply => reply.comment_id !== selectedReplyId)
+        console.log("대댓글 삭제 완료")
+    }
 }
 
 // 모달에서 게시글 수정, 삭제 옵션
@@ -289,6 +313,31 @@ const commentOnIsLiked = async (comment) => {
     console.log(comment.is_liked)
 }
 
+// 대댓글 좋아요
+const replyOnIsLiked = async (reply) => {
+    console.log("reply",reply)
+    if (reply.is_liked) {
+        reply.likes_count--
+    } else {
+        reply.likes_count++
+    }
+    reply.is_liked = !reply.is_liked
+    const data = await useArticle.replyLikes(reply.comment_id)
+    console.log(reply.is_liked)
+}
+
+
+// 댓글 수정
+// const handleUpdateComment = async () => {
+//     console.log('articleId', articleId)
+//     const request = {
+//         title: title.value,
+//         content: content.value,
+//     }
+//     console.log('request',request)
+//     await useArticle.updateArticle(articleId, request)
+//     router.push({ name: 'detail_article', params: { id: articleId } })
+// }
 
 
 

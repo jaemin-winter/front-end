@@ -7,8 +7,11 @@
       <SearchIcon @click = "goArticle1_2" class="absolute top-1/2 -translate-1/2 right-10 cursor-pointer" />
    </div>
    <div class="w-full ps-6 pt-7 flex gap-4">
-      <h3 class="h3 fw-black cursor-pointer">최신글</h3>
-      <h3 class="h3 fw-black cursor-pointer">인기글</h3>
+      <h3 v-for="order in orderList" :key="order.orderBy" class="h3 fw-black cursor-pointer"
+         :class="order.isSelected ? 'text-brown-600' : 'text-gray-600'"
+      @click="filterRecent(order)">{{ order.orderBy }}</h3>
+      <!-- <h3 @click = "filterRecent('최신순')" class="h3 fw-black cursor-pointer">최신글</h3>
+      <h3 @click = "filterRecent('인기순')" class="h3 fw-black cursor-pointer">인기글</h3> -->
    </div>
 
    <!-- 게시글 -->
@@ -69,6 +72,52 @@ const goDetail_article = (articleId) => {
    router.push({ name: 'detail_article', params:{id:articleId}})
 }
 
+interface Order {
+   orderBy: string
+   isSelected: boolean
+}
+
+const orderList = ref<Order[]>([
+   {
+      orderBy: '최신순',
+      isSelected: true
+   },
+   {
+      orderBy: '인기순',
+      isSelected: false
+   },
+])
+
+const filterRecent = (order: Order) => {
+   orderList.value.forEach((order) => {
+      order.isSelected = false
+   })
+   if (order.orderBy === '최신순') {
+      articles.value.sort((a, b) => {
+         // const a_time = new Date(a.created_at)
+         // const b_time = new Date(b.created_at)
+         const a_time:Date = a.created_at
+         const b_time:Date = b.created_at
+         if (a_time > b_time) {
+            return -1
+         } else if (a_time < b_time) {
+            return 1
+         }
+         return 0
+      })
+   }
+   if (order.orderBy === '인기순') {
+      articles.value.sort((a, b) => {
+         if (a.likes_count > b.likes_count) {
+            return -1
+         } else if (a.likes_count < b.likes_count) {
+            return 1
+         }
+         return 0
+      })
+   }
+   order.isSelected = true
+}
 
 </script>
 
