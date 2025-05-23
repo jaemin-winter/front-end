@@ -1,6 +1,7 @@
 <template>
   <main class="px-5 w-full py-16 overflow-hidden">
 
+    <!-- <button @click="testLogout">테스트 로그아웃</button> -->
     <header class="w-full flex justify-between items-center mb-5">
       <div class="flex items-center gap-2">
         <back-icon color="black"></back-icon>
@@ -76,12 +77,13 @@ import StarImg from '@/assets/images/star.png'
 // import 'swiper/css/navigation';
 import { useAuthStore } from '@/stores/authStore';
 import { useRouter } from 'vue-router';
-import { useUserStore } from '@/stores/userStore';
 
-
-const userStore = useUserStore()
 const router = useRouter()
+const authStore = useAuthStore();
 
+function testLogout() {
+  authStore.logout();
+}
 </script>
 
 

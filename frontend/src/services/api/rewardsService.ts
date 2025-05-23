@@ -8,6 +8,18 @@ export const rewardsService = {
       throw new Error('API 응답 실패')
     }
     return result.data
+  },
+  purchaseReward: async (rewardId: number) => {
+    try {
+      const response = await apiClient.post(`/rewards/purchase/`, {
+        rewardId: rewardId
+      })
+      console.log('response', response)
+      return response.data
+    } catch (error: any) {
+      console.log('구매 실패:', error.data)
+      return error
+    }
   }
 }
 

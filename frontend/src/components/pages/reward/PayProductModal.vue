@@ -12,21 +12,21 @@
       <!-- 정보 목록 -->
       <div class="pt-5">
         <div class="flex justify-between h-9">
-          <span class="h4 text-cocoa-500">상품명</span>
-          <span class="h4 text-cocoa-500">{{ rewardData.reward.cost }}P</span>
+          <h4 class="text-cocoa-500 font-extrabold">상품명</h4>
+          <h4 class="text-cocoa-500 font-extrabold">{{ rewardData.reward.name }}</h4>
         </div>
         <div class="flex justify-between h-9">
-          <span class="h4 text-cocoa-500">구매일자</span>
-          <span class="h4 text-cocoa-500">{{ formatDate(rewardData.redeemed_at) }}</span>
+          <h4 class="text-cocoa-500 font-extrabold">구매일자</h4>
+          <h4 class="text-cocoa-500 font-extrabold">{{ formatDate(rewardData.redeemed_at) }}</h4>
         </div>
         <div class="flex justify-between h-9">
-          <span class="h4 text-cocoa-500">유효기간</span>
-          <span class="h4 text-cocoa-500">{{ daysLeft(rewardData.expire_at) }}</span>
+          <h4 class="text-cocoa-500 font-extrabold">유효기간</h4>
+          <h4 class="text-cocoa-500 font-extrabold">{{ daysLeft(rewardData.expire_at) }}</h4>
         </div>
-        <div class="h-22 bg-gray-300 p-2 text-left">
-          <span class="h4 text-cocoa-500 block">상품설명</span>
-          <div class="h4 text-cocoa-500 text-right">
-            {{ rewardData.reward.description || '상품설명을 적어주세요' }}
+        <div class="h-22 bg-gray-300 text-left">
+          <h4 class="text-cocoa-500 font-extrabold">상품설명</h4>
+          <div>
+            <h4 class="text-cocoa-500 font-extrabold">{{ rewardData.reward.description || '상품설명을 적어주세요' }}</h4>
           </div>
         </div>
       </div>

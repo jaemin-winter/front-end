@@ -1,5 +1,5 @@
 import apiClient from "@/plugins/axios";
-import type { LoginRequest } from "@/types/user";
+import type { LoginRequest, SignupRequest } from "@/types/user";
 
 export const authService = {
   emailLogin: async (credential: LoginRequest) => {
@@ -11,8 +11,11 @@ export const authService = {
     const redirectUrl = `${apiClient.getUri()}/auth/kakao-login/`;
     window.location.href = redirectUrl;
   },
-  emailDuplicationCheck: async () => {
-    const response = await apiClient.get('/auth/email-check/')
+  emailDuplicationCheck: async (email: string) => {
+    const params = {
+      email: email
+    }
+    const response = await apiClient.get('/auth/email-check/', { params })
     return response.data
   },
   naverLogin: () => {
@@ -23,6 +26,10 @@ export const authService = {
     const response = await apiClient.post('/auth/logout/')
     return response.data
   },
+  emailSignup: async (signupRequest: SignupRequest) => {
+    const response = await apiClient.post('/auth/email-signup/', signupRequest)
+    return response.data
+  }
 };
 
 export default authService;

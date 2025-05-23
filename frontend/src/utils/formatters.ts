@@ -107,3 +107,17 @@ export function validateEmail(email: string): boolean {
   return emailRegex.test(email);
 }
 
+
+// 비밀번호 형식 검사
+// 문자, 숫자 특수문자 포함 8~20자
+export function validatePassword(password: string): boolean {
+  const passwordRegex = /^(?=.*[a-zA-Z])(?=.*\d)(?=.*[!@#$%^&*])[a-zA-Z\d!@#$%^&*]{8,20}$/;
+  // console.log(password)
+  // console.log(passwordRegex.test(password))
+  return passwordRegex.test(password);
+}
+
+// 비밀번호 일치 검사
+export function validatePasswordConfirm(password: string, passwordConfirm: string): boolean {
+  return password === passwordConfirm;
+}

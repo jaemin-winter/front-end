@@ -74,10 +74,9 @@ apiClient.interceptors.response.use(
           authStore.setRefreshToken(null)
           console.error('로그아웃 실패:', logoutError);
         }
-        return Promise.reject(error);
       }
     }
-    return Promise.reject(error);
+    return Promise.reject(error.response)
   }
 )
 export default apiClient

@@ -131,8 +131,7 @@ const goBack = () => {
 };
 
 const goSignup = () => {
-  console.log('goSignup')
-  // router.push('/auth/signup')
+  router.push('/auth/signuptest')
 };
 </script>
 

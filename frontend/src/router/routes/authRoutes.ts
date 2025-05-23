@@ -7,6 +7,8 @@ import Login_02 from '@/components/pages/auth/login/Login_02.vue'
 import MobileAuthLayout from '@/layouts/MobileAuthLayout.vue'
 import guestGuard from '@/middlewares/guards/guest.guard'
 
+import Signup from '@/components/pages/auth/login/Signup.vue'
+
 export const authRoutes = [
   {
     path: '/auth',
@@ -40,6 +42,14 @@ export const authRoutes = [
     path: '/auth/callback',
     name: 'AuthCallback',
     component: AuthCallback,
+  },
+  {
+    path: '/auth/signuptest',
+    name: 'singuptest',
+    component: Signup,
+    meta: {
+      layout: MobileAuthLayout,
+    },
   },
 ]
 

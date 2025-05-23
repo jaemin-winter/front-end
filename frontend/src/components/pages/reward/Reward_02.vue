@@ -5,7 +5,7 @@
       <div class="relative flex items-center h-7 mx-6">
         <h3 class="h3 mx-auto text-cocoa-600">리워드</h3>
         <button class="absolute left-0 top-1/2 transform -translate-y-1/2">
-          <BackIcon color="black" class="cursor-pointer" />
+          <BackIcon color="black" class="cursor-pointer" @click="goBack" />
         </button>
       </div>
     </div>
@@ -18,10 +18,18 @@
 
     <!-- 카테고리 탭 -->
     <div class="w-full gap-5 text-center justify-between flex mt-5 px-5 text-gray-600">
-      <h4 class="h4 w-21 h-7 rounded-lg bg-cocoa-100 text-cocoa-600">1주일</h4>
+      <h4
+        v-for="item in categoryList" :key="item.label"
+        class="h4 w-21 h-7 rounded-lg"
+        @click="handleCategoryClick(item)"
+        :class="item.isSelected ? 'bg-cocoa-100 text-cocoa-600' : 'bg-gray-400 text-cocoa-600'"
+        >
+        {{ item.label }}
+      </h4>
+      <!-- <h4 class="h4 w-21 h-7 rounded-lg bg-cocoa-100 text-cocoa-600">1주일</h4>
       <h4 class="h4 w-21 h-7 rounded-lg bg-gray-400 text-cocoa-600">1개월</h4>
       <h4 class="h4 w-21 h-7 rounded-lg bg-gray-400 text-cocoa-600">6개월</h4>
-      <h4 class="h4 w-21 h-7 rounded-lg bg-gray-400 text-cocoa-600">1년</h4>
+      <h4 class="h4 w-21 h-7 rounded-lg bg-gray-400 text-cocoa-600">1년</h4> -->
     </div>
 
     <!-- 정렬 옵션 -->
@@ -48,7 +56,7 @@
           <div class="text-left">
             <p class="h4 font-semibold text-cocoa-600 pb-2">{{ item.reward.name }}</p>
             <p class="caption text-gray-600 pb-2">{{ formatDate(item.redeemed_at) }}</p>
-            <p class="caption text-gray-600 font-semibold">{{ item.reward.cost }}P</p>
+            <p class="caption text-gray-600 font-semibold">{{ item.reward.point }}P</p>
           </div>
         </div>
 
@@ -74,7 +82,7 @@
 </template>
 
 <script setup lang="ts">
-import { ref, onMounted } from 'vue'
+import { ref, onMounted, watch } from 'vue'
 import { useRouter } from 'vue-router'
 import sort from '@/components/common/icons/sort.vue'
 import BackIcon from '@/components/common/icons/BackIcon.vue'
@@ -99,11 +107,32 @@ interface ExtendedRewardTransaction extends RewardTransaction {
 }
 
 const purchaseList = ref<ExtendedRewardTransaction[]>([])
+const allPurchaseList = ref<ExtendedRewardTransaction[]>([])
+
+const categoryList = ref([
+  {
+    label: '1주일',
+    isSelected: true,
+  },
+  {
+    label: '1개월',
+    isSelected: false,
+  },
+  {
+    label: '6개월',
+    isSelected: false,
+  },
+  {
+    label: '1년',
+    isSelected: false,
+  },
+])
+
 
 const fetchData = async () => {
   try {
     const data = await fetchPurchaseList()
-    purchaseList.value = data.map((item: RewardTransaction) => {
+    allPurchaseList.value = data.map((item: RewardTransaction) => {
       const status = statusMap[item.status] || { label: '알수없음', key: '' }
       return {
         ...item,
@@ -111,10 +140,71 @@ const fetchData = async () => {
         statusKey: status.key,
       }
     })
+    purchaseList.value = allPurchaseList.value
+    // 1주일 만 조회
+    purchaseList.value = allPurchaseList.value.filter((item: ExtendedRewardTransaction) => {
+      const today = new Date()
+      const redeemed_at = new Date(item.redeemed_at)
+      const diffTime = Math.abs(today.getTime() - redeemed_at.getTime())
+      const diffDays = Math.ceil(diffTime / (1000 * 60 * 60 * 24))
+      return diffDays <= 7
+    })
   } catch (e) {
     console.error('구매내역 불러오기 실패:', e)
   }
 }
+
+const handleCategoryClick = (item: any) => {
+  categoryList.value.forEach((item) => {
+    item.isSelected = false
+  })
+  item.isSelected = true
+}
+
+watch(categoryList.value, (newVal) => {
+  console.log('newVal', newVal)
+  categoryList.value.forEach((item) => {
+    if (item.isSelected) {
+      if (item.label === '1주일') {
+        purchaseList.value = allPurchaseList.value.filter((item: ExtendedRewardTransaction) => {
+          const today = new Date()
+          const redeemed_at = new Date(item.redeemed_at)
+          const diffTime = Math.abs(today.getTime() - redeemed_at.getTime())
+          const diffDays = Math.ceil(diffTime / (1000 * 60 * 60 * 24))
+          console.log('diffDays', diffDays)
+          return diffDays <= 7
+        })
+      } else if (item.label === '1개월') {
+        purchaseList.value = allPurchaseList.value.filter((item: ExtendedRewardTransaction) => {
+          const today = new Date()
+          const redeemed_at = new Date(item.redeemed_at)
+          const diffTime = Math.abs(today.getTime() - redeemed_at.getTime())
+          const diffDays = Math.ceil(diffTime / (1000 * 60 * 60 * 24))
+          console.log('diffDays', diffDays)
+          return diffDays <= 30
+        })
+      } else if (item.label === '6개월') {
+        purchaseList.value = allPurchaseList.value.filter((item: ExtendedRewardTransaction) => {
+          const today = new Date()
+          const redeemed_at = new Date(item.redeemed_at)
+          const diffTime = Math.abs(today.getTime() - redeemed_at.getTime())
+          const diffDays = Math.ceil(diffTime / (1000 * 60 * 60 * 24))
+          console.log('diffDays', diffDays)
+          return diffDays <= 180
+        })
+      } else if (item.label === '1년') {
+        purchaseList.value = allPurchaseList.value.filter((item: ExtendedRewardTransaction) => {
+          const today = new Date()
+          const redeemed_at = new Date(item.redeemed_at)
+          const diffTime = Math.abs(today.getTime() - redeemed_at.getTime())
+          const diffDays = Math.ceil(diffTime / (1000 * 60 * 60 * 24))
+          console.log('diffDays', diffDays)
+          return diffDays <= 365
+        })
+      }
+    }
+  })
+})
 
 const openModal = (item: RewardTransaction) => {
   selectedReward.value = item
@@ -147,6 +237,9 @@ const goToProductList = () => {
 }
 
 onMounted(fetchData)
+
+const goBack = () => router.back()
+
 </script>
 
 <style scoped>

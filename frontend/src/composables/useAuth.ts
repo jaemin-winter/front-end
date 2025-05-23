@@ -1,7 +1,7 @@
 import { authService } from "@/services/api/authService";
 import { useAuthStore } from "@/stores/authStore";
 import { useUserStore } from "@/stores/userStore";
-import type { LoginRequest } from "@/types/user";
+import type { LoginRequest, SignupRequest } from "@/types/user";
 import { useRouter } from "vue-router";
 
 const useAuth = () => {
@@ -15,9 +15,10 @@ const useAuth = () => {
   const naverLogin = () => {
     authService.naverLogin();
   };
-  const emailDuplicationCheck = async () => {
-    const data = await authService.emailDuplicationCheck();
-    return data.duplication
+  const emailDuplicationCheck = async (email: string): Promise<boolean> => {
+    const data = await authService.emailDuplicationCheck(email);
+    console.log(data)
+    return data.data.duplication as boolean
   };
   const emailLogin = async (credential: LoginRequest) => {
     try {
@@ -34,6 +35,29 @@ const useAuth = () => {
       console.error('로그인 실패', error)
       return {
         error: '로그인에 실패하였습니다.'
+      }
+    }
+  }
+  const emailSignup = async (signupRequest: SignupRequest) => {
+    try {
+      console.log(signupRequest)
+      const response = await authService.emailSignup(signupRequest)
+      console.log(response)
+      if (response.status === 200) {
+        const accessToken = response.data.access_token
+        const refreshToken = response.data.refresh_token
+        if (accessToken) {
+          window.location.href = `/auth/callback?access_token=${accessToken}&refresh_token=${refreshToken}`;
+        }
+      } else {
+        return {
+          error: response.data.message
+        }
+      }
+    } catch (error) {
+      console.error('회원가입 실패', error)
+      return {
+        error: '회원가입에 실패하였습니다.'
       }
     }
   }
@@ -66,7 +90,8 @@ const useAuth = () => {
     kakaoLogin,
     naverLogin,
     emailDuplicationCheck,
-    emailLogin
+    emailLogin,
+    emailSignup
   };
 };
 

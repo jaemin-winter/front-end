@@ -7,8 +7,9 @@ export interface RewardTransaction {
     reward_id: number
     name: string
     description: string
-    cost: number
+    point: number
     thumbnail?: string | null
+    category: string,
     images: string[]
   }
 }

@@ -43,7 +43,14 @@ export interface UserState {
 export interface UserProfileResponse {
   level: number;
   exp: number;
-  mileage: number;
+  point: number;
   averageIncome?: number;
 }
 
+export interface SignupRequest {
+  name: string;
+  email: string;
+  password: string;
+  passwordConfirm: string;
+  nickname: string;
+}
