@@ -17,7 +17,7 @@
       </h3>
       <div class="w-41 h-7 px-3 bg-gold-200 rounded-2xl flex items-center justify-between">
         <img src="@/assets/images/point.png" alt="point" />
-        <p class="block h4">{{ userData?.user_profile?.mileage ?? 0 }}P</p>
+        <p class="block h4">{{ userData?.user_profile?.point ?? 0 }}P</p>
       </div>
 
       <!-- 카드 -->
@@ -47,16 +47,16 @@
     </div>
 
     <div class="w-full items-center mt-3">
-      <swiper :slides-per-view="2.5" :space-between="30" :loop="true" :grab-cursor="true" class="w-full mt-3">
-        <swiper-slide v-for="(reward, index) in rewards" :key="reward.reward_id">
+      <Swiper :slides-per-view="2.5" :space-between="30" :grab-cursor="true" class="w-full mt-3">
+        <SwiperSlide v-for="(reward, index) in rewards" :key="reward.reward_id">
           <div class="flex-col gap-4">
-            <img :src="gifticons[index % gifticons.length]" alt="gifticon" class="w-36 h-25" />
+            <img :src="gifticons[index % gifticons.length]" alt="gifticon" class="w-36 h-36 object-cover" />
             <p class="caption fw-bold mt-1">{{ reward.name }}</p>
             <p class="caption fw-bold">{{ reward.description }}</p>
-            <p class="caption fw-bold">{{ reward.cost }}P</p>
+            <p class="caption fw-bold">{{ reward.point }}P</p>
           </div>
-        </swiper-slide>
-      </swiper>
+        </SwiperSlide>
+      </Swiper>
     </div>
 
     <!-- 챌린지 -->
@@ -69,16 +69,16 @@
     </div>
 
     <div class="w-full items-center mt-3">
-      <swiper :slides-per-view="2.5" :space-between="100" :loop="true" :grab-cursor="true" class="w-full">
-        <swiper-slide v-for="challenge in challengeList" :key="challenge.challenge_id">
+      <Swiper :slides-per-view="2.5" :space-between="100" :grab-cursor="true" class="w-full">
+        <SwiperSlide v-for="challenge in challengeList" :key="challenge.challenge_id">
           <div class="h-30 w-43 bg-gray-300 rounded-3xl px-5 py-4 flex-col gap-1">
             <p class="h4 fw-black">{{ challenge.category || '카테고리' }}</p>
             <p class="h4">{{ challenge.title }}</p>
             <p class="h4">{{ challenge.point || 0 }}P</p>
             <p class="h6">{{ formatDate(challenge.start_date) }} - {{ formatDate(challenge.end_date) }}</p>
           </div>
-        </swiper-slide>
-      </swiper>
+        </SwiperSlide>
+      </Swiper>
     </div>
   </section>
 </template>
@@ -96,7 +96,7 @@ import RightArrow from '@/components/common/icons/RightArrow.vue'
 
 import useRewardsComposable from '@/composables/useRewards'
 import { useUserStore } from '@/stores/userStore'
-import challengesService from '@/services/api/challenges'
+// import challengesService from '@/services/api/challenges'
 
 import type { Reward } from '@/types/rewards'
 import type { Challenge } from '@/types/challenges'
@@ -111,7 +111,7 @@ const gifticons = [Gifticon1, Gifticon2, Gifticon3, Gifticon4]
 const router = useRouter()
 const userStore = useUserStore()
 const { user } = storeToRefs(userStore)
-const userData = computed(() => (user.value as any)?.data)
+const userData = computed(() => (user.value))
 
 const rewards = ref<Reward[]>([])
 const challengeList = ref<Challenge[]>([])
@@ -134,8 +134,8 @@ onMounted(async () => {
   if (!user.value) await userStore.fetchUser()
   try {
     rewards.value = await useRewards.fetchRewardList()
-    const allChallenges = await challengesService.fetchChallengeList()
-    challengeList.value = allChallenges.filter(c => c.status === '예정')
+    // const allChallenges = await challengesService.fetchChallengeList(10)
+    // challengeList.value = allChallenges.filter(c => c.status === '예정')
   } catch (error) {
     console.error('데이터 로딩 실패:', error)
   }
