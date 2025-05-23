@@ -17,14 +17,14 @@
         <div class="h3 text-black">{{ challengeDetail?.title || '챌린지명을 입력하세요' }}</div>
       </div>
 
-      <!-- 도전 상태 버튼 -->
-      <button
-        class="w-41 h-16 rounded-full mb-10"
-        :class="buttonClass"
-        @click="handleStartChallenge"
+      <!-- 상태 뱃지 (도전중/성공/실패만 표시) -->
+      <div
+        v-if="['도전중', '성공', '실패'].includes(challengeDetail?.computed_status || '')"
+        class="mb-10 w-fit px-4 py-2 rounded-full text-center"
+        :class="badgeClass"
       >
-        <div class="h2 fw-bold">{{ buttonText }}</div>
-      </button>
+        {{ challengeDetail?.computed_status }}
+      </div>
 
       <!-- 챌린지 상세 정보 영역 -->
       <div class="w-full bg-white shadow-2xl rounded-4xl py-5.5 px-5">
@@ -46,47 +46,29 @@ import { useRouter, useRoute } from 'vue-router'
 import BackIcon from '@/components/common/icons/BackIcon.vue'
 import useChallengesComposable from '@/composables/useChallenges'
 
-// 라우터 정보
 const route = useRoute()
 const router = useRouter()
 const challengeId = Number(route.params.id)
 const goBack = () => router.back()
 
-// 컴포저블에서 데이터 가져오기
 const {
   challengeDetail,
   detailData,
   fetchChallengeDetail,
-  startChallenge,
 } = useChallengesComposable()
 
-// 마운트 시 챌린지 상세정보 요청
 onMounted(() => {
   fetchChallengeDetail(challengeId)
 })
 
-// 버튼 텍스트 계산
-const buttonText = computed(() => {
+const badgeClass = computed(() => {
   const status = challengeDetail.value?.computed_status
-  console.log(challengeDetail.value)
-  if (status === '도전가능') return '도전하기'
-  // if (status === '도전불가') return ''
-  // if (status === '예') return '실패'
-  // if (status === '예정') return '도전하기'
-  return '상태 없음'
+  if (status === '도전중') return 'bg-gold-200 text-black'
+  if (status === '성공') return 'bg-minty-400 text-white'
+  if (status === '실패') return 'bg-gray-400 text-black'
+  return ''
 })
 
-// 버튼 색상 클래스 계산
-const buttonClass = computed(() => {
-  const status = challengeDetail.value?.computed_status
-  if (status === '도전중') return 'bg-gold-200'
-  if (status === '성공') return 'bg-minty-400'
-  if (status === '실패') return 'bg-gray-400'
-  if (status === '예정') return 'bg-gold-400'
-  return 'bg-gray-300'
-})
-
-// 종료일 기준 D-day 계산
 const ddayText = computed(() => {
   const end = challengeDetail.value?.end_date
   if (!end) return '-'
@@ -98,7 +80,6 @@ const ddayText = computed(() => {
   return '마감됨'
 })
 
-// 챌린지 정보 항목 정의
 type ChallengeKey = 'title' | 'goal' | 'point' | 'date'
 const keys: ChallengeKey[] = ['title', 'goal', 'point', 'date']
 const titleMapping: Record<ChallengeKey, string> = {
@@ -107,22 +88,6 @@ const titleMapping: Record<ChallengeKey, string> = {
   point: '보상',
   date: '진행 기간',
 }
-
-const handleStartChallenge = async () => {
-  if (challengeDetail.value?.computed_status !== '도전가능') return
-
-  try {
-    await startChallenge(challengeId)
-
-    // 상세 정보 재요청으로 버튼 상태 반영
-    await fetchChallengeDetail(challengeId)
-
-    alert('챌린지에 도전했습니다!')
-  } catch (e) {
-    alert('도전에 실패했습니다.')
-  }
-}
-
 </script>
 
 <style scoped>
