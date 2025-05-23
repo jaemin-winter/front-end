@@ -8,7 +8,7 @@
           <WriteIcon />
           <h3>수정</h3>
         </div>
-        <RightArrow class="cursor-pointer" width="16" height="16" @click="goToUpdate" />
+        <RightArrow class="cursor-pointer" width="16" height="16" @click="goUpdate_article(props.articleId)" />
       </div>
       <div class="w-full flex items-center justify-between">
         <div class="flex gap-4">
@@ -28,6 +28,7 @@ import RightArrow from '../common/icons/RightArrow.vue';
 import { ref } from 'vue'
 import { useRouter } from 'vue-router'
 import useArticleComposable from '@/composables/useArticle'
+
 const useArticle = useArticleComposable()
 const router = useRouter()
 const props = defineProps({
@@ -35,15 +36,22 @@ const props = defineProps({
   commentId: Number,
 })
 const emit = defineEmits(['close', 'delete'])
-
-const goToUpdate = () => {
-  router.push({ name: 'create_article' });
+// 게시글 수정페이지로 이동
+const goUpdate_article = (articleId) => {
+  router.push({ name: 'update_article', params: { id: articleId } })
 };
 
+// , query: { title: article.title, content: article.content, id: article.id });
 const handleDeleteComment = async () => {
-  // 삭제 요청
-  emit('delete', props.articleId, props.commentId)
+  const isConfirmed = confirm('정말 삭제하시겠습니까?')
+  if (isConfirmed) {
+    // 삭제 요청
+    emit('delete', props.articleId, props.commentId)
+  }
 }
+
+
+
 
 
 </script>
