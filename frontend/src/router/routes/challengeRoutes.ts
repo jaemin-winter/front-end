@@ -3,6 +3,7 @@ import ChallengeView from '@/views/ChallengeView.vue'
 import Challenge_01 from '@/components/pages/challenge/Challenge_01.vue'
 import Challenge_02 from '@/components/pages/challenge/Challenge_02.vue'
 import Challenge_03 from '@/components/pages/challenge/Challenge_03.vue'
+import Challenge_04 from '@/components/pages/challenge/Challenge_04.vue'
 
 export const challengeRoutes = [
   {
@@ -27,6 +28,11 @@ export const challengeRoutes = [
         path: ':id',
         name: 'challenge_detail',
         component: Challenge_03
+      },
+      {
+        path: 'personal',
+        name: 'challenge_personal',
+        component: Challenge_04
       }
     ],
   },

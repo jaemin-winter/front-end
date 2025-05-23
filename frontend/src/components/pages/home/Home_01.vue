@@ -25,7 +25,7 @@
         <div class="w-41 h-31 bg-gold-200 rounded-2xl py-[27px] px-5">
           <ExpenseIcon />
           <p class="caption fw-bold mt-2">5월 소비금액</p>
-          <p class="h4 fw-black">1,500,000,000</p>
+          <p class="h4 fw-black">{{thisTotalAmount.toLocaleString()}}원</p>
         </div>
         <div class="w-41 h-31 bg-gold-200 rounded-2xl py-[27px] px-5">
           <ChallengeIcon />
@@ -70,9 +70,9 @@
 
     <div class="w-full items-center mt-3">
       <Swiper :slides-per-view="2.5" :space-between="100" :grab-cursor="true" class="w-full">
-        <SwiperSlide v-for="challenge in challengeList" :key="challenge.challenge_id">
-          <div class="h-30 w-43 bg-gray-300 rounded-3xl px-5 py-4 flex-col gap-1">
-            <p class="h4 fw-black">{{ challenge.category || '카테고리' }}</p>
+        <SwiperSlide v-for="challenge in unjoinedChallenges" :key="challenge.challenge_id">
+          <div class="h-fit w-43 bg-gray-300 rounded-3xl px-5 py-4 flex-col gap-1">
+            <p class="h4 fw-bold">{{ challenge.category_name || '카테고리' }}</p>
             <p class="h4">{{ challenge.title }}</p>
             <p class="h4">{{ challenge.point || 0 }}P</p>
             <p class="h6">{{ formatDate(challenge.start_date) }} - {{ formatDate(challenge.end_date) }}</p>
@@ -96,15 +96,15 @@ import RightArrow from '@/components/common/icons/RightArrow.vue'
 
 import useRewardsComposable from '@/composables/useRewards'
 import { useUserStore } from '@/stores/userStore'
-// import challengesService from '@/services/api/challenges'
+import useChallengesComposable from '@/composables/useChallenges'
 
 import type { Reward } from '@/types/rewards'
-import type { Challenge } from '@/types/challenges'
 
 import Gifticon1 from '@/assets/images/gifticon1.png'
 import Gifticon2 from '@/assets/images/Gifticon2.png'
 import Gifticon3 from '@/assets/images/Gifticon3.png'
 import Gifticon4 from '@/assets/images/Gifticon4.png'
+import expenseService from '@/services/api/expenseService'
 
 const gifticons = [Gifticon1, Gifticon2, Gifticon3, Gifticon4]
 
@@ -114,9 +114,15 @@ const { user } = storeToRefs(userStore)
 const userData = computed(() => (user.value))
 
 const rewards = ref<Reward[]>([])
-const challengeList = ref<Challenge[]>([])
-
 const useRewards = useRewardsComposable()
+
+const {
+  unjoinedChallenges,
+  fetchUnjoinedChallenges,
+  fetchPersonalChallenges,
+} = useChallengesComposable()
+
+const thisTotalAmount = ref(0)
 
 const formatDate = (iso: string) => {
   const d = new Date(iso)
@@ -134,11 +140,13 @@ onMounted(async () => {
   if (!user.value) await userStore.fetchUser()
   try {
     rewards.value = await useRewards.fetchRewardList()
-    // const allChallenges = await challengesService.fetchChallengeList(10)
-    // challengeList.value = allChallenges.filter(c => c.status === '예정')
+    await fetchPersonalChallenges()
+    await fetchUnjoinedChallenges(10)
   } catch (error) {
     console.error('데이터 로딩 실패:', error)
   }
+  const { current_month } = await expenseService.getSummary()
+  thisTotalAmount.value = current_month.total_amount
 })
 </script>
 
