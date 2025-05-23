@@ -25,6 +25,13 @@ export interface createArticleRequest {
     content: String
 }
 
+// 게시글 수정 body
+export interface updateArticle {
+    title?: String
+    content: String
+}
+
+
 // 게시글 상세 response
 export interface ArticleDetail {
     article_id?: Number
@@ -45,17 +52,6 @@ export interface createCommentRequest {
 }
 
 
-
-// 댓글 response
-export interface ParentComment extends Comment {
-    replies: Comment[]
-    isView: {
-        type: boolean
-        default: false
-    }
-    
-}
-
 // 대댓글 response
 export interface Comment {
     comment_id: Number
@@ -66,5 +62,16 @@ export interface Comment {
     comment_count: String
     code: String
 }
+
+
+export interface ParentComment extends Comment {
+    // 댓글 response
+    replies: Comment[]
+    isView: {
+        type: boolean
+        default: false
+    }    
+    
+}    
 
 

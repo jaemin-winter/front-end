@@ -38,7 +38,7 @@
 
 </template>
 
-<script setup>
+<script setup lang="ts">
 
 import WriteArticleIcon from '@/components/common/icons/WriteArticleIcon.vue'
 import LeftArrow from '@/components/common/icons/LeftArrow.vue';
@@ -49,7 +49,6 @@ import ScrapIcon from '@/components/common/icons/ScrapIcon.vue';
 import { onMounted, ref, watch } from 'vue';
 import { useRouter } from 'vue-router'
 import useArticleComposable from '@/composables/useArticle';
-
 const router = useRouter()
 const articles = ref([])
 const useArticle = useArticleComposable()
@@ -57,7 +56,6 @@ const useArticle = useArticleComposable()
 onMounted(async () => {
    const data = await useArticle.getArticleList({})
    articles.value = data.articles
-   console.log(articles)
 })
 
 const goArticle3 = () => {
