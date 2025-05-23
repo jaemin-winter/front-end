@@ -30,7 +30,6 @@
         <div
           v-for="data in filteredChallenges"
           :key="data.user_challenge_id"
-          @click="goDetail(data.challenge.challenge_id, data.status)"
           class="flex justify-between border-b-2 border-dashed border-gray-600 pb-1"
         >
           <!-- 왼쪽 아이콘 + 카테고리명 -->
